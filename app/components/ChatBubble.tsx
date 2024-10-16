@@ -17,8 +17,8 @@ export const ChatBubble = ({ message, isUser, timestamp }: BubbleProps) => {
       className={cn(
         "rounded-lg p-3 m-2 max-w-xs break-words w-full",
         isUser
-          ? "bg-blue-500 text-white self-end"
-          : "bg-gray-300 text-black self-start"
+          ? "bg-blue-500 text-white self-start"
+          : "bg-gray-300 text-black self-end"
       )}
     >
       <p>{message}</p>

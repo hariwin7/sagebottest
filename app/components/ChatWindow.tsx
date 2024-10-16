@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChatBubble } from "./ChatBubble";
 import { UsernameInput } from "./UserNameBox";
 
@@ -17,15 +17,24 @@ export const ChatWindow = () => {
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
 
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
   useEffect(() => {
     socket.on("privateMessage", (msg: MsgType) => {
-      console.log("privateMessage", msg);
       setMessages((prevMessages: Array<MsgType>) => [...prevMessages, msg]);
     });
     return () => {
-      socket.off("message");
+      socket.off("privateMessage");
     };
   }, []);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const getMessageHistory = async (username: string) => {
     const res = await fetch(`/api/messages?username=${username}`);
@@ -37,16 +46,9 @@ export const ChatWindow = () => {
     setIsUsernameSet(usernameSet);
     getMessageHistory(username);
     socket.emit("joinRoom", username);
-    console.log("joinig room");
   };
 
   const giveConsent = () => {
-    // const consentMessage = {
-    //   text: "Thank you for giving your consent. How can I assist you today?",
-    //   isUser: false,
-    //   timestamp: new Date().toISOString(),
-    // };
-    // setMessages([consentMessage]);
     setConsentGiven(true);
   };
 
@@ -98,6 +100,7 @@ export const ChatWindow = () => {
             />
           ))
         )}
+        <div ref={messagesEndRef}></div>
       </div>
 
       {isUsernameSet && consentGiven && (
