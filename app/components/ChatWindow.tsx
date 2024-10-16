@@ -27,19 +27,26 @@ export const ChatWindow = () => {
     };
   }, []);
 
+  const getMessageHistory = async (username: string) => {
+    const res = await fetch(`/api/messages?username=${username}`);
+    const data = await res.json();
+    setMessages(data);
+  };
+
   const joinRoom = (usernameSet: boolean) => {
     setIsUsernameSet(usernameSet);
+    getMessageHistory(username);
     socket.emit("joinRoom", username);
     console.log("joinig room");
   };
 
   const giveConsent = () => {
-    const consentMessage = {
-      text: "Thank you for giving your consent. How can I assist you today?",
-      isUser: false,
-      timestamp: new Date().toISOString(),
-    };
-    setMessages([consentMessage]);
+    // const consentMessage = {
+    //   text: "Thank you for giving your consent. How can I assist you today?",
+    //   isUser: false,
+    //   timestamp: new Date().toISOString(),
+    // };
+    // setMessages([consentMessage]);
     setConsentGiven(true);
   };
 

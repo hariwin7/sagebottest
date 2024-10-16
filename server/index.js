@@ -1,6 +1,5 @@
 const express = require("express");
 const { createServer } = require("node:http");
-const { join } = require("node:path");
 const { Server } = require("socket.io");
 const cors = require("cors"); //
 
@@ -25,10 +24,16 @@ io.on("connection", (socket) => {
   });
 
   // Handling private messages
-  socket.on("privateMessage", (data) => {
+  socket.on("privateMessage", async (data) => {
     console.log(data);
     const { message, roomId } = data;
-    io.to(roomId).emit("privateMessage", message);
+    const res = await fetch(`http://localhost:3000/api/messages`, {
+      method: "POST",
+      body: JSON.stringify({ ...message, username: roomId }),
+    });
+    const responseData = await res.json();
+    console.log(responseData);
+    // io.to(roomId).emit("privateMessage", message);
   });
 
   // Handling disconnection
