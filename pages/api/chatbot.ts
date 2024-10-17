@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import getChatCompletion from "@/lib/genAi";
+import getChatCompletion, { matchVector, embedding } from "@/lib/genAi";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,7 +8,15 @@ export default async function handler(
   if (req.method === "POST") {
     const { message } = JSON.parse(req.body);
     try {
-      const returnMessage = await getChatCompletion(message);
+      const embeddingVector = await embedding(message);
+      const matchedInformationData = await matchVector(
+        embeddingVector[0]?.embedding
+      );
+      console.log("matchedInformationData", matchedInformationData);
+      const augmentedPrompt = `From the celebrity data given below answer the promt:${message}\n
+        ${matchedInformationData}\n\n"`;
+
+      const returnMessage = await getChatCompletion(augmentedPrompt);
 
       res.status(200).json(returnMessage);
     } catch (error) {
