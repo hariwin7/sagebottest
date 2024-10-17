@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
       ...message,
       username: roomId,
     });
-
+    io.to(roomId).emit("privateMessage", savedUserMessage);
     const responseMessageFromBot = await getMessageFromBot(
       savedUserMessage.text
     );
@@ -51,6 +51,7 @@ io.on("connection", (socket) => {
     });
 
     //send back to the room
+
     io.to(roomId).emit("privateMessage", saveBotResonseJson);
   });
 

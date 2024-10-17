@@ -57,9 +57,7 @@ export const ChatWindow = () => {
       const newMessage = {
         text: input,
         isUser: true,
-        timestamp: new Date().toISOString(),
       };
-      setMessages([...messages, newMessage]);
       setInput("");
       socket.emit("privateMessage", {
         message: newMessage,
